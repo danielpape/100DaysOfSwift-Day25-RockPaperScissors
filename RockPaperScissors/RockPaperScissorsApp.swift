@@ -11,7 +11,7 @@ import SwiftUI
 struct RockPaperScissorsApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ContentView(randomPick: 0, shouldWin: true)
         }
     }
 }
