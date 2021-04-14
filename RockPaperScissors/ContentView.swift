@@ -20,19 +20,39 @@ struct ContentView: View {
     @State var pickRequired:Int = 0
     @State var displayingResult = false
     @State var AlertTitle:String = ""
-    let options = ["Rock","Paper","Scissors"]
+    
+    @State var score:Int = 0
+    @State var CompletedQuestions: Int = 0
+    @State var finishedQuiz = false
+    let options = ["Rock 🪨","Paper 📃","Scissors ✂️"]
+    var availableOptions = [String]()
+    
     
     func optionTapped(_ option:Int){
         if(option == pickRequired){
             AlertTitle="That's right!"
-            print("Random pick is \(options[randomPick]), and you should \(shouldWin ? "" : "not") win. Pick required is \(options[pickRequired]) You chose \(options[option])")
+            score += 1
+            CompletedQuestions += 1
+            ResetGame()
+
         } else {
             AlertTitle="That's wrong!"
-            print("Random pick is \(options[randomPick]), and you should \(shouldWin ? "" : "not") win. Pick required is \(options[pickRequired]) You chose \(options[option])")
+            CompletedQuestions += 1
+            ResetGame()
+
+        }
+        if CompletedQuestions == 10 {
+            finishedQuiz = true
+            displayAlert()
         }
     }
     func displayAlert(){
         displayingResult.toggle()
+    }
+    
+    func StartNewGame(){
+        score = 0
+        CompletedQuestions = 0
         ResetGame()
     }
     
@@ -53,30 +73,37 @@ struct ContentView: View {
         }else if(randomPick == 2 && !shouldWin){
             pickRequired = 1
         }
-        
     }
     
     var body: some View {
-        VStack(spacing: 20){
-            Text("I choose \(options[randomPick])")
-            Text(shouldWin ? "Which should you choose to win?" : "Which should you choose to lose?")
-            ForEach(0..<3){ option in
-                Button(action: {
-                    self.optionTapped(option)
-                    displayAlert()
-                }){
-                    Text(options[option])
+        NavigationView{
+            ZStack{
+                LinearGradient(gradient: Gradient(colors: [.green,.blue]), startPoint: .top, endPoint: .bottom)
+                    .edgesIgnoringSafeArea(/*@START_MENU_TOKEN@*/.all/*@END_MENU_TOKEN@*/)
+                    .opacity(0.3)
+                VStack(spacing: 20){
+                    Text("I choose \(options[randomPick])")
+                    Text(shouldWin ? "Which should you choose to win?" : "Which should you choose to lose?")
+                    ForEach(0..<3){ option in
+                        Button(action: {
+                            self.optionTapped(option)
+                        }){
+                            Text(options[option])
+                        }
+                        .frame(minWidth: 300, minHeight: 40)
+                        .background(Color.blue)
+                        .foregroundColor(.white)
+                        .cornerRadius(16.0)
+                        
+                    }
                 }
-                .frame(minWidth: 300, minHeight: 40)
-                .background(Color.blue)
-                .foregroundColor(.white)
-                .cornerRadius(16.0)
-                
+                .alert(isPresented: $displayingResult, content: {
+                    Alert(title: Text("Quiz finished"), message: Text("You have scored \(score) / \(CompletedQuestions)"), dismissButton: .default(Text("Reset"), action: StartNewGame))
+                })
+                .navigationTitle(Text("Rock Paper Scissors"))
+                .navigationBarItems(trailing: Text("\(score) / \(CompletedQuestions)"))
             }
         }
-        .alert(isPresented: $displayingResult, content: {
-            Alert(title: Text(AlertTitle), message: Text("You have scored 1 / 1"), dismissButton: .default(Text("Dismiss")))
-        })
     }
 }
 
