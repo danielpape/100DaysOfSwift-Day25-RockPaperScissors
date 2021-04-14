@@ -83,12 +83,13 @@ struct ContentView: View {
                     .opacity(0.3)
                 VStack(spacing: 20){
                     Text("I choose \(options[randomPick])")
+                        .font(.largeTitle)
                     Text(shouldWin ? "Which should you choose to win?" : "Which should you choose to lose?")
                     ForEach(0..<3){ option in
                         Button(action: {
                             self.optionTapped(option)
                         }){
-                            Text(options[option])
+                            Text(options[option]
                         }
                         .frame(minWidth: 300, minHeight: 40)
                         .background(Color.blue)
